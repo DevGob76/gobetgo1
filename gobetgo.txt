@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Bet Go - Paris Sportifs Intelligents</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* Page d'accueil */
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .logo {
+            font-size: 3em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .app-title {
+            font-size: 1.5em;
+            color: #34495e;
+            margin-bottom: 30px;
+        }
+        .phone-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        /* Pages principales */
+        .page {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .page.active {
+            display: block;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .page-content {
+            padding: 30px;
+        }
+        /* Menu principal */
+        .main-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .menu-item {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        .menu-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        .menu-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .menu-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        /* Navigation */
+        .navigation {
+            background: #2c3e50;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-title {
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .back-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* Prédictions */
+        .prediction-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .form-group select,
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        .ai-results {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .ai-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        .ai-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .prediction-item {
+            background: #ecf0f1;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        /* Répartition des mises */
+        .bet-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .bet-table th,
+        .bet-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .bet-table th {
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        .bet-table input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .validate-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        /* Statistiques */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+        /* Popup */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .close-popup {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        /* Admin Panel */
+        .admin-access {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8em;
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+            animation: pulse 2s infinite;
+            border: 3px solid #fff;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+        .admin-access:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #c0392b, #a93226);
+        }
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            z-index: 1001;
+            max-width: 600px;
+            width: 95%;
+            border: 2px solid #e74c3c;
+        }
+        .admin-panel h3 {
+            color: #e74c3c;
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .admin-panel .form-group label {
+            color: #ecf0f1;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .admin-panel input {
+            background: rgba(255,255,255,0.9);
+            border: 2px solid #e74c3c;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .admin-panel input:focus {
+            border-color: #f39c12;
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
+        }
+        .phone-list {
+            max-height: 350px;
+            overflow-y: auto;
+            border: 2px solid #e74c3c;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        .phone-list h4 {
+            color: #f39c12;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .phone-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(231, 76, 60, 0.3);
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+        .phone-number {
+            color: #ecf0f1;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .delete-phone {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .delete-phone:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: scale(1.05);
+        }
+        .admin-panel .btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: 2px solid #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .admin-panel .btn:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+        }
+        .admin-panel .back-btn {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            border: 2px solid #fff;
+            padding: 12px 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .admin-panel .back-btn:hover {
+            background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
+        }
+        .admin-warning {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .admin-warning strong {
+            color: #f39c12;
+            font-size: 1.1em;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .prediction-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .prediction-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bet-table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page d'accueil / Login -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <div class="logo">🎯</div>
+            <h1 class="app-title">GO BET GO</h1>
+            <p style="margin-bottom: 30px; color: #7f8c8d;">Prédictions intelligentes et répartition stratégique</p>
+            <input type="tel" id="phoneInput" class="phone-input" placeholder="Entrez votre numéro de téléphone" maxlength="15">
+            <button class="btn" onclick="login()">Accéder à l'application</button>
+        </div>
+    </div>
+    <!-- Page principale avec menus -->
+    <div id="mainPage" class="page">
+        <div class="page-header">
+            <h1>🎯 GO BET GO</h1>
+            <p>Tableau de bord principal</p>
+        </div>
+        <div class="page-content">
+            <div class="main-menu">
+                <div class="menu-item" onclick="showPage('predictionsPage')">
+                    <div class="menu-icon">🤖</div>
+                    <div class="menu-title">Prédictions IA</div>
+                    <div class="menu-description">Analysez les matchs avec 5 IA différentes</div>
+                </div>
+                <div class="menu-item" onclick="showPage('distributionPage')">
+                    <div class="menu-icon">💰</div>
+                    <div class="menu-title">Répartition des Mises</div>
+                    <div class="menu-description">Stratégie intelligente de distribution</div>
+                </div>
+                <div class="menu-item" onclick="showPage('resultsPage')">
+                    <div class="menu-icon">📊</div>
+                    <div class="menu-title">Résultats</div>
+                    <div class="menu-description">Suivez les résultats des matchs</div>
+                </div>
+                <div class="menu-item" onclick="showPage('balancePage')">
+                    <div class="menu-icon">📈</div>
+                    <div class="menu-title">Bilan P&L</div>
+                    <div class="menu-description">Profits et pertes détaillés</div>
+                </div>
+                <div class="menu-item" onclick="showPage('archivesPage')">
+                    <div class="menu-icon">📚</div>
+                    <div class="menu-title">Archives</div>
+                    <div class="menu-description">Historique des pronostics</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Prédictions -->
+    <div id="predictionsPage" class="page">
+        <div class="navigation">
+            <div class="nav-title">🤖 Prédictions IA</div>
+            <button class="back-btn" onclick="showPage('mainPage')">← Retour</button>
+        </div>
+        <div class="page-content">
+            <div class="prediction-controls">
+                <div class="form-group">
+                    <label for="sportSelect">Type de Sport</label>
+                    <select id="sportSelect">
+                        <option value="football">Football ⚽</option>
+                        <option value="basketball">Basketball 🏀</option>
+                        <option value="tennis">Tennis 🎾</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="championshipSelect">Championnat</label>
+                    <select id="championshipSelect">
+                        <option value="ligue1">Ligue 1 🇫🇷</option>
+                        <option value="premier">Premier League 🏴</option>
+                        <option value="laliga">La Liga 🇪🇸</option>
+                        <option value="bundesliga">Bundesliga 🇩🇪</option>
+                        <option value="seriea">Serie A 🇮🇹</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="matchDate">Date du Match</label>
+                    <input type="date" id="matchDate">
+                </div>
+                <div class="form-group">
+                    <label for="teams">Équipes</label>
+                    <input type="text" id="teams" placeholder="Équipe A vs Équipe B">
+                </div>
+            </div>
+            <button class="btn" onclick="getPredictions()">Obtenir les Prédictions IA</button>
+
+            <div id="aiResults" class="ai-results" style="display: none;">
+                <h3>Synthèse des Prédictions IA</h3>
+                <div id="finalPrediction"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Répartition -->
+    <div id="distributionPage" class="page">
+        <div class="navigation">
+            <div class="nav-title">💰 Répartition des Mises</div>
+            <button class="back-btn" onclick="showPage('mainPage')">← Retour</button>
+        </div>
+        <div class="page-content">
+            <div class="form-group" style="max-width: 300px; margin-bottom: 30px;">
+                <label for="totalBudget">Budget Total (€)</label>
+                <input type="number" id="totalBudget" placeholder="1000" min="0" step="0.01">
+            </div>
+            <h3>Score Exact</h3>
+            <table class="bet-table">
+                <tr>
+                    <th>Score 1</th>
+                    <th>Score 2</th>
+                    <th>Score 3</th>
+                    <th>Score 4</th>
+                </tr>
+                <tr id="exactScores">
+                    <td><input type="text" placeholder="1-0"></td>
+                    <td><input type="text" placeholder="2-1"></td>
+                    <td><input type="text" placeholder="1-1"></td>
+                    <td><input type="text" placeholder="2-0"></td>
+                </tr>
+                <tr id="exactOdds">
+                    <td><input type="number" placeholder="8.50" step="0.01"></td>
+                    <td><input type="number" placeholder="7.25" step="0.01"></td>
+                    <td><input type="number" placeholder="3.40" step="0.01"></td>
+                    <td><input type="number" placeholder="6.00" step="0.01"></td>
+                </tr>
+                <tr id="exactStakes">
+                    <td><input type="number" placeholder="0" readonly></td>
+                    <td><input type="number" placeholder="0" readonly></td>
+                    <td><input type="number" placeholder="0" readonly></td>
+                    <td><input type="number" placeholder="0" readonly></td>
+                </tr>
+                <tr id="exactProfits">
+                    <td><input type="text" placeholder="0€" readonly></td>
+                    <td><input type="text" placeholder="0€" readonly></td>
+                    <td><input type="text" placeholder="0€" readonly></td>
+                    <td><input type="text" placeholder="0€" readonly></td>
+                </tr>
+            </table>
+            <button class="validate-btn" onclick="validateBet('exact')">✅ Valider Pronostic Score Exact</button>
+            <h3 style="margin-top: 40px;">Total Buts (Under/Over)</h3>
+            <table class="bet-table">
+                <tr>
+                    <th>Under 2.5</th>
+                    <th>Over 2.5</th>
+                </tr>
+                <tr id="totalScores">
+                    <td><input type="text" value="Under 2.5" readonly></td>
+                    <td><input type="text" value="Over 2.5" readonly></td>
+                </tr>
+                <tr id="totalOdds">
+                    <td><input type="number" placeholder="2.10" step="0.01"></td>
+                    <td><input type="number" placeholder="1.75" step="0.01"></td>
+                </tr>
+                <tr id="totalStakes">
+                    <td><input type="number" placeholder="0" readonly></td>
+                    <td><input type="number" placeholder="0" readonly></td>
+                </tr>
+                <tr id="totalProfits">
+                    <td><input type="text" placeholder="0€" readonly></td>
+                    <td><input type="text" placeholder="0€" readonly></td>
+                </tr>
+            </table>
+            <button class="validate-btn" onclick="validateBet('total')">✅ Valider Pronostic Under/Over</button>
+        </div>
+    </div>
+    <!-- Page Résultats -->
+    <div id="resultsPage" class="page">
+        <div class="navigation">
+            <div class="nav-title">📊 Résultats des Matchs</div>
+            <button class="back-btn" onclick="showPage('mainPage')">← Retour</button>
+        </div>
+        <div class="page-content">
+            <div id="matchResults">
+                <p style="text-align: center; color: #7f8c8d; padding: 40px;">Aucun résultat disponible pour le moment</p>
+            </div>
+        </div>
+    </div>
+    <!-- Page Bilan -->
+    <div id="balancePage" class="page">
+        <div class="navigation">
+            <div class="nav-title">📈 Bilan Profits & Pertes</div>
+            <button class="back-btn" onclick="showPage('mainPage')">← Retour</button>
+        </div>
+        <div class="page-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalBets">0</div>
+                    <div class="stat-label">Paris Validés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalWins">0</div>
+                    <div class="stat-label">Paris Gagnés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalProfits">€0</div>
+                    <div class="stat-label">Profits Totaux</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="winRate">0%</div>
+                    <div class="stat-label">Taux de Réussite</div>
+                </div>
+            </div>
+            <div id="betHistory" style="margin-top: 30px;">
+                <h3>Historique des Paris</h3>
+                <div id="historyList">
+                    <p style="text-align: center; color: #7f8c8d; padding: 40px;">Aucun pari validé pour le moment</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Page Archives -->
+    <div id="archivesPage" class="page">
+        <div class="navigation">
+            <div class="nav-title">📚 Archives des Pronostics</div>
+            <button class="back-btn" onclick="showPage('mainPage')">← Retour</button>
+        </div>
+        <div class="page-content">
+            <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
+                <label for="archivePeriod">Période</label>
+                <select id="archivePeriod">
+                    <option value="week">Cette semaine</option>
+                    <option value="month">Ce mois</option>
+                    <option value="quarter">Ce trimestre</option>
+                    <option value="year">Cette année</option>
+                </select>
+            </div>
+            <div id="archiveResults">
+                <p style="text-align: center; color: #7f8c8d; padding: 40px;">Aucune archive disponible pour le moment</p>
+            </div>
+        </div>
+    </div>
+    <!-- Popup -->
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <h3 id="popupTitle">Message</h3>
+            <p id="popupMessage"></p>
+            <button class="close-popup" onclick="closePopup()">Fermer</button>
+        </div>
+    </div>
+    <!-- Accès Admin -->
+    <div class="admin-access" onclick="showAdminPanel()">⚙️</div>
+    <!-- Panel Admin -->
+    <div id="adminPanel" class="admin-panel">
+        <h3>🔐 PANEL D'ADMINISTRATION</h3>
+
+        <div class="admin-warning">
+            <strong>⚠️ ZONE RÉSERVÉE ADMINISTRATEUR</strong><br>
+            Gestion des accès utilisateurs - Go Bet Go
+        </div>
+        <div class="form-group">
+            <label for="newPhone">📱 Ajouter un nouveau numéro autorisé</label>
+            <input type="tel" id="newPhone" placeholder="Ex: +33123456789 ou 0123456789" maxlength="15">
+            <button class="btn" onclick="addPhone()" style="margin-top: 15px;">➕ AJOUTER NUMÉRO</button>
+        </div>
+        <div class="phone-list" id="phoneList">
+            <h4>📋 NUMÉROS AUTORISÉS</h4>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="back-btn" onclick="closeAdminPanel()">❌ FERMER PANEL</button>
+        </div>
+    </div>
+    <script>
+        // Base de données des numéros autorisés (modifiable par l'admin)
+        let authorizedPhones = [
+            "+33123456789",
+            "+33987654321",
+            "0123456789",
+            "+22507070707"  // Ajoutez votre numéro ici
+        ];
+        // Variables globales
+        let currentUser = null;
+        let validatedBets = [];
+        let aiPredictions = {};
+        let currentBudget = 0;
+        // Authentification
+        function login() {
+            const phoneInput = document.getElementById('phoneInput').value.trim();
+
+            if (!phoneInput) {
+                showPopup('Erreur', 'Veuillez entrer votre numéro de téléphone');
+                return;
+            }
+            if (authorizedPhones.includes(phoneInput)) {
+                currentUser = phoneInput;
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('mainPage').classList.add('active');
+                showPopup('Bienvenue', 'Accès autorisé à Go Bet Go !');
+            } else {
+                showPopup('Accès Refusé', 'Numéro de téléphone non autorisé');
+            }
+        }
+        // Navigation entre pages
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+        // Panel d'administration
+        function showAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'block';
+            updatePhoneList();
+        }
+        function closeAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+        function addPhone() {
+            const newPhone = document.getElementById('newPhone').value.trim();
+
+            if (!newPhone) {
+                showPopup('Erreur', 'Veuillez entrer un numéro de téléphone');
+                return;
+            }
+            // Validation format numéro
+            const phoneRegex = /^(\+33|0)[1-9](\d{8})$|^\+\d{10,15}$/;
+            if (!phoneRegex.test(newPhone)) {
+                showPopup('Format Invalide', 'Format de numéro incorrect. Utilisez +33XXXXXXXXX ou 0XXXXXXXXX');
+                return;
+            }
+            if (authorizedPhones.includes(newPhone)) {
+                showPopup('Numéro Existant', 'Ce numéro est déjà autorisé');
+                return;
+            }
+            authorizedPhones.push(newPhone);
+            document.getElementById('newPhone').value = '';
+            updatePhoneList();
+            showPopup('Succès', `Numéro ${newPhone} ajouté avec succès !`);
+
+            // Sauvegarde locale
+            if (typeof(Storage) !== "undefined") {
+                try {
+                    localStorage.setItem('go_bet_go_phones', JSON.stringify(authorizedPhones));
+                } catch (e) {
+                    console.log('Erreur sauvegarde:', e);
+                }
+            }
+        }
+        function deletePhone(phone) {
+            if (authorizedPhones.length <= 1) {
+                showPopup('Erreur', 'Impossible de supprimer le dernier numéro autorisé');
+                return;
+            }
+            if (confirm(`Voulez-vous vraiment supprimer le numéro ${phone} ?`)) {
+                authorizedPhones = authorizedPhones.filter(p => p !== phone);
+                updatePhoneList();
+                showPopup('Suppression', `Numéro ${phone} supprimé avec succès`);
+
+                // Sauvegarde locale
+                if (typeof(Storage) !== "undefined") {
+                    try {
+                        localStorage.setItem('go_bet_go_phones', JSON.stringify(authorizedPhones));
+                    } catch (e) {
+                        console.log('Erreur sauvegarde:', e);
+                    }
+                }
+            }
+        }
+        function updatePhoneList() {
+            const phoneList = document.getElementById('phoneList');
+            let html = '<h4>📋 NUMÉROS AUTORISÉS</h4>';
+
+            if (authorizedPhones.length === 0) {
+                html += '<p style="text-align: center; color: #95a5a6; padding: 20px;">Aucun numéro autorisé</p>';
+            } else {
+                authorizedPhones.forEach((phone, index) => {
+                    html += `
+                        <div class="phone-item">
+                            <span class="phone-number">📱 ${phone}</span>
+                            <button class="delete-phone" onclick="deletePhone('${phone}')">🗑️ Supprimer</button>
+                        </div>
+                    `;
+                });
+            }
+
+            html += `<div style="margin-top: 15px; padding: 10px; background: rgba(46, 204, 113, 0.2); border-radius: 5px; text-align: center;">
+                        <strong style="color: #27ae60;">📊 Total: ${authorizedPhones.length} numéro(s) autorisé(s)</strong>
+                     </div>`;
+
+            phoneList.innerHTML = html;
+        }
+        // Chargement des numéros sauvegardés
+        function loadSavedPhones() {
+            if (typeof(Storage) !== "undefined") {
+                try {
+                    const saved = localStorage.getItem('go_bet_go_phones');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            authorizedPhones = parsed;
+                        }
+                    }
+                } catch (e) {
+                    console.log('Erreur lors du chargement des numéros sauvegardés');
+                }
+            }
+        }
+        // Prédictions IA
+        function getPredictions() {
+            const sport = document.getElementById('sportSelect').value;
+            const championship = document.getElementById('championshipSelect').value;
+            const date = document.getElementById('matchDate').value;
+            const teams = document.getElementById('teams').value;
+            if (!date || !teams) {
+                showPopup('Erreur', 'Veuillez remplir tous les champs');
+                return;
+            }
+            // Simulation des réponses IA
+            const aiResponses = {
+                'Perplexity': generatePrediction(),
+                'ChatGPT': generatePrediction(),
+                'Claude Sonnet 4': generatePrediction(),
+                'DeepSeek': generatePrediction(),
+                'Mistral': generatePrediction()
+            };
+            // Synthèse des prédictions
+            const synthesis = synthesizePredictions(aiResponses);
+            displayPredictions(synthesis);
+        }
+        function generatePrediction() {
+            const exactScores = ['1-0', '2-1', '1-1', '2-0', '0-1', '1-2', '0-0', '3-1'];
+            const underOver = ['Under 2.5', 'Over 2.5'];
+
+            return {
+                exactScores: shuffleArray(exactScores).slice(0, 4),
+                underOver: underOver[Math.floor(Math.random() * 2)]
+            };
+        }
+        function synthesizePredictions(responses) {
+            const allExactScores = [];
+            const allUnderOver = [];
+            Object.values(responses).forEach(prediction => {
+                allExactScores.push(...prediction.exactScores);
+                allUnderOver.push(prediction.underOver);
+            });
+            // Compte les occurrences
+            const exactCount = {};
+            const underOverCount = {};
+            allExactScores.forEach(score => {
+                exactCount[score] = (exactCount[score] || 0) + 1;
+            });
+            allUnderOver.forEach(bet => {
+                underOverCount[bet] = (underOverCount[bet] || 0) + 1;
+            });
+            // Filtre les prédictions répétées au moins 2 fois
+            const validExactScores = Object.keys(exactCount).filter(score => exactCount[score] >= 2);
+            const validUnderOver = Object.keys(underOverCount).filter(bet => underOverCount[bet] >= 2);
+            return {
+                exactScores: validExactScores,
+                underOver: validUnderOver,
+                isValid: validExactScores.length > 0 || validUnderOver.length > 0
+            };
+        }
+        function displayPredictions(synthesis) {
+            const resultsDiv = document.getElementById('aiResults');
+            const finalPrediction = document.getElementById('finalPrediction');
+            if (!synthesis.isValid) {
+                showPopup('Prédiction Non Conforme', 'Prédiction non conforme à la norme de 2 prédictions ou plus');
+                return;
+            }
+            let html = '<div class="ai-section">';
+            html += '<div class="ai-name">Synthèse Validée ✅</div>';
+
+            if (synthesis.exactScores.length > 0) {
+                html += '<h4>Scores Exacts Probables:</h4>';
+                html += '<div class="prediction-grid">';
+                synthesis.exactScores.forEach(score => {
+                    html += `<div class="prediction-item">${score}</div>`;
+                });
+                html += '</div>';
+            }
+            if (synthesis.underOver.length > 0) {
+                html += '<h4>Total Buts:</h4>';
+                html += '<div class="prediction-grid">';
+                synthesis.underOver.forEach(bet => {
+                    html += `<div class="prediction-item">${bet}</div>`;
+                });
+                html += '</div>';
+            }
+            html += '</div>';
+            finalPrediction.innerHTML = html;
+            resultsDiv.style.display = 'block';
+            // Sauvegarde pour utilisation dans la répartition
+            aiPredictions = synthesis;
+        }
+        // Fonction utilitaire pour mélanger un tableau
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        // Affichage des popups
+        function showPopup(title, message) {
+            document.getElementById('popupTitle').textContent = title;
+            document.getElementById('popupMessage').textContent = message;
+            document.getElementById('popup').style.display = 'block';
+        }
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+        // Appel initial
+        window.onload = function() {
+            loadSavedPhones();
+        };
+    </script>
+</body>
+</html>
